@@ -5,6 +5,21 @@ var fsPlugin = {
         'pcdesc': 'http://hws.m.taobao.com/cache/wdesc/5.0?id=',
         'h5desc': 'http://hws.m.taobao.com/cache/mdesc/5.0?id='
     },
+    'shops': [{
+        'id': '58501945',
+        'suid': '263817957',
+        'name': 'handuyishe',
+        items: {
+
+        }
+    }, {
+        'id': '70986937',
+        'suid': '849727411',
+        'name': 'amh',
+        items: {
+
+        }
+    }],
     util: {
         getDataByKey: function(key, array) {
             for (var n = 0, len = array.length; n < len; n++) {
@@ -16,7 +31,7 @@ var fsPlugin = {
         },
         init: function(html) {
             this.doc = document.createElement('div');
-            this.doc.innerHTML = html.replace(/(<|<\/)(script|img|object|html|body|head|meta|link|style|iframe|frame|embed|audio|video)/gi, '$1'+this.getTagName('$2')).replace(/\s+data\-src/g,' src');
+            this.doc.innerHTML = html.replace(/(<|<\/)(script|img|object|html|body|head|meta|link|style|iframe|frame|embed|audio|video)/gi, '$1' + this.getTagName('$2')).replace(/\s+data\-src/g, ' src');
         },
         getData: function() {
             var array = this.getTagContext('script');
@@ -47,7 +62,7 @@ var fsPlugin = {
                 me = this;
             util.each(this.doc.getElementsByClassName('itbox'), function(i, div) {
                 var img = div.getElementsByTagName(me.getTagName('img'));
-                array.push($(img[0]).attr('src').replace(/\.(jpg|png|gif)_.+/i,'.$1'));
+                array.push($(img[0]).attr('src').replace(/\.(jpg|png|gif)_.+/i, '.$1'));
             });
             return array;
         }
@@ -58,6 +73,10 @@ var fsPlugin = {
     captures: undefined,
     init: function() {
         this.inited = true;
+
+        chrome.tabs.create({
+            url: "fsCaptured.html"
+        });
     },
     launchFunction: function(cmd, obj) {
         if (cmd == "captureInit") this.captureInit(obj);
@@ -108,33 +127,166 @@ var fsPlugin = {
 
     },
     getKey: function(title) {
-        var key = (title || '').match(/\w{2}\d{4}/);
-        return key;
+        var array = (title || '').match(/\w{2}\d{4}/);
+        return (array || [])[0];
     },
     getItemId: function(url) {
-        var id = (url || '').match(/\d{11,12}/);
-        return id;
+        var array = (url || '').match(/\d{11,12}/);
+        return (array || [])[0];
     },
-    getDetailJSON: function(id) {
+    initDetail: function() {
+        var me = this;
+        var shop = localStorage['58501945'];
+        shop = JSON.parse(shop);
+
+
+        var array = [];
+        util.it(shop.items, function(key, value) {
+            array.push({
+                itemId: key,
+                shopId: shop.id
+            });
+        });
+
+
+        shop = localStorage['58501945'];
+        shop = JSON.parse(shop);
+        util.it(shop.items, function(key, value) {
+            array.push({
+                itemId: key,
+                shopId: shop.id
+            });
+        });
+
+        array.index = 0;
+        this.loadDetail(array);
+    },
+    loadDetail: function(array) {
+        var me = this,
+            item = array[array.index++];
+        if (!item) {
+            return;
+        }
+        this.getDetailJSON(item.itemId, item.shopId, function() {
+            setTimeout(function() {
+                me.loadDetail(array);
+            }, 3000);
+        });
+    },
+    getDetailJSON: function(id, shopId, handle) {
         var me = this;
         $.ajax({
+            cache: false,
             url: this.urls.detail + id,
             dataType: 'text',
             success: function(html) {
-                me.doDetailHTML(id, html);
+                me.doDetailHTML(id, shopId, html);
+                handle();
             },
             error: function(msg) {
 
             }
         });
     },
-    doDetailHTML: function(id, html) {
+    doDetailHTML: function(id, shopId, html) {
         this.util.init(html);
         var array = this.util.getMainImageArray();
-        var data = this.util.getData();
+        var data = this.util.getData() || {};
         var detail = data.detail;
-        var itemId = detail.itemDO.itemId;
-        var title = detail.itemDO.title;
+        var mdskip = data.mdskip;
+
+        $.ajax({
+            type: 'POST',
+            url: 'http://127.0.0.1:8901',
+            data: {
+                id: id,
+                shop: shopId,
+                filename: id + '_detail.json',
+                dir: '',
+                data: JSON.stringify(detail)
+            },
+            success: function() {},
+            error: function() {}
+        });
+
+        $.ajax({
+            type: 'POST',
+            async: false,
+            url: 'http://127.0.0.1:8901',
+            data: {
+                id: id,
+                shop: shopId,
+                filename: id + '_mdskip.json',
+                dir: '',
+                data: JSON.stringify(mdskip)
+            },
+            success: function() {},
+            error: function() {}
+        });
+
+        $.ajax({
+            type: 'POST',
+            async: false,
+            url: 'http://127.0.0.1:8901',
+            data: {
+                id: id,
+                shop: shopId,
+                filename: id + '_images.json',
+                dir: '',
+                data: JSON.stringify(array)
+            },
+            success: function() {},
+            error: function() {}
+        });
+    },
+    getShopList: function(index, page, sort) {
+        var me = this;
+        var shop = this.shops[index],
+            url = 'https://' + shop.name + '.m.tmall.com/shop/shop_auction_search.do',
+            data = {
+                index: index,
+                // jsonpCallback: '_DLP_2384_86937_ajson_1_source_tmallsearch',
+                // callback: '_DLP_2384_86937_ajson_1_source_tmallsearch',
+                spm: 'a320p.7692171.0.0',
+                suid: shop.suid,
+                sort: sort || 'hotsell',
+                p: page || 1,
+                page_size: 12,
+                from: 'h5',
+                shop_id: shop.id,
+                ajson: 1,
+                source: 'tmallsearch'
+            };
+
+
+        $.ajax({
+            url: url,
+            dataType: 'jsonp',
+            data: data,
+            success: function(json) {
+                me.doItemListJson(json, data);
+            },
+            error: function(msg) {
+
+            }
+        });
+    },
+    doItemListJson: function(json, data) {
+        var me = this;
+        var shop = this.shops[data.index];
+        if (json.items) {
+            util.each(json.items, function(i, item) {
+                shop.items[item.item_id] = me.getKey(item.title);
+            });
+
+            if (json.items.length == json.page_size) {
+                setTimeout(function() {
+                    me.getShopList(data.index, data.p + 1, data.sort);
+                }, 3000);
+            } else {
+                localStorage[shop.id] = JSON.stringify(shop);
+            }
+        }
     },
     captureDone: function(data) {
 
