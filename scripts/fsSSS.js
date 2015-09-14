@@ -197,7 +197,7 @@ function getKey(title) {
 };
 
 function getItemId(url) {
-    var id = (url || '').match(/\d{11}/);
+    var id = (url || '').match(/\d{11,12}/);
     return id;
 };
 
@@ -225,6 +225,9 @@ var url = {
         'handuyishe': '263817957',
         'amh': '70986937'
     },
+    'items' : [
+    	'18959526273','520726911961','520830061103'
+    ],
     'shopsearch': ['https://amh.m.tmall.com/shop/shop_auction_search.do?callback=_DLP_2384_86937_ajson_1_source_tmallsearch&spm=a222m.7628550.1998338747.1&sort=default&p=1&page_size=12&from=h5&shop_id=70986937&ajson=1&source=tmallsearch', 'https://handuyishe.m.tmall.com/shop/shop_auction_search.do?callback=_DLP_2384_01945_ajson_1_source_tmallsearch&spm=a320p.7692171.0.0&suid=263817957&sort=default&p=1&page_size=12&from=h5&shop_id=58501945&ajson=1&source=tmallsearch'],
     'seach': 'https://handuyishe.m.tmall.com/shop/shop_auction_search.do?callback=_DLP_2384_01945_ajson_1_source_tmallsearch&sort=default&p=2&page_size=12&from=h5&shop_id=58501945&ajson=1&source=tmallsearch'
 };
