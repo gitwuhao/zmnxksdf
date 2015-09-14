@@ -1,6 +1,6 @@
 {
    "background": {
-      "scripts": [ "scripts/fsUtils.js", "scripts/fsCommands.js", "scripts/fsBackground.js", "scripts/fsSSS.js", "scripts/fsNativeAPISupport.js", "scripts/3p/base64.js" ]
+      "scripts": [ "scripts/3p/jquery-2.1.1.min.js", "scripts/fsUtils.js", "scripts/fsCommands.js", "scripts/fsBackground.js", "scripts/fsSSS.js", "scripts/fsNativeAPISupport.js", "scripts/3p/base64.js" ]
    },
    "browser_action": {
       "default_icon": "images/sss_19.png",
@@ -26,6 +26,7 @@
    "offline_enabled": true,
    "options_page": "fsOptions.html",
    "permissions": [ "\u003Call_urls>", "contextMenus", "nativeMessaging","debugger" ],
+   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
    "short_name": "FireShot",
    "version": "0.98.80"
 }

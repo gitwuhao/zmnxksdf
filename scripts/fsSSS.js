@@ -1,28 +1,76 @@
 var fsPlugin = {
+    urls: {
+        'upload': 'http://127.0.0.1:8901',
+        'detail': 'https://detail.m.tmall.com/item.htm?id=',
+        'pcdesc': 'http://hws.m.taobao.com/cache/wdesc/5.0?id=',
+        'h5desc': 'http://hws.m.taobao.com/cache/mdesc/5.0?id='
+    },
+    util: {
+        getDataByKey: function(key, array) {
+            for (var n = 0, len = array.length; n < len; n++) {
+                if (new RegExp(key, 'gi').test(array[n])) {
+                    var fn = new Function(array[n] + '; return ' + key + ';');
+                    return fn();
+                }
+            }
+        },
+        init: function(html) {
+            this.doc = document.createElement('div');
+            this.doc.innerHTML = html.replace(/(<|<\/)(script|img|object|html|body|head|meta|link|style|iframe|frame|embed|audio|video)/gi, '$1'+this.getTagName('$2')).replace(/\s+data\-src/g,' src');
+        },
+        getData: function() {
+            var array = this.getTagContext('script');
+            if (array.length < 1) {
+                return null;
+            }
+            return {
+                detail: this.getDataByKey('_DATA_Detail', array),
+                mdskip: this.getDataByKey('_DATA_Mdskip', array)
+            };
+        },
+        getTagName: function(tag) {
+            return 'x' + tag + 'x';
+        },
+        getTagContext: function(tag) {
+            var list = this.doc.getElementsByTagName(this.getTagName(tag));
+            var array = [];
+            for (var n = 0, len = list.length; n < len; n++) {
+                var html = list[n].innerHTML;
+                if (html.length > 0 && !/^\s+$/.test(html)) {
+                    array.push(html);
+                }
+            }
+            return array;
+        },
+        getMainImageArray: function() {
+            var array = [],
+                me = this;
+            util.each(this.doc.getElementsByClassName('itbox'), function(i, div) {
+                var img = div.getElementsByTagName(me.getTagName('img'));
+                array.push($(img[0]).attr('src').replace(/\.(jpg|png)_.+/i,'.$1'));
+            });
+            return array;
+        }
+    },
     defaultImageFormat: "jpg",
     port: undefined,
     inited: false,
     captures: undefined,
-
     init: function() {
         this.inited = true;
     },
-
     launchFunction: function(cmd, obj) {
         if (cmd == "captureInit") this.captureInit(obj);
         else if (cmd == "captureTabPNG") this.captureTabPNG(obj);
         else if (cmd == "captureDone") this.loadImages(obj, this.captureDone);
     },
-
     captureInit: function(data) {
         this.captures = [];
         this.imagesLoaded = 0;
     },
-
     captureTabPNG: function(data) {
         this.captures.push(data);
     },
-
     loadImages: function(data, callback) {
         var cntr;
         var imagesPending = this.captures.length;
@@ -59,12 +107,37 @@ var fsPlugin = {
         logToConsole(capture.data);
 
     },
+    getKey: function(title) {
+        var key = (title || '').match(/\w{2}\d{4}/);
+        return key;
+    },
+    getItemId: function(url) {
+        var id = (url || '').match(/\d{11,12}/);
+        return id;
+    },
+    getDetailJSON: function(id) {
+        var me = this;
+        $.ajax({
+            url: this.urls.detail + id,
+            dataType: 'text',
+            success: function(html) {
+                me.doDetailHTML(id, html);
+            },
+            error: function(msg) {
 
+            }
+        });
+    },
+    doDetailHTML: function(id, html) {
+        this.util.init(html);
+        var array = this.util.getMainImageArray();
+        var data = this.util.getData();
+        var detail = data.detail;
+        var itemId = detail.itemDO.itemId;
+        var title = detail.itemDO.title;
+    },
     captureDone: function(data) {
 
-        chrome.tabs.create({
-            url: "fsCaptured.html"
-        });
 
     },
     captureDone2: function(data) {
@@ -181,6 +254,10 @@ var fsPlugin = {
 
 
         //alert(this.pBitmapForChrome.toDataURL());
+
+        chrome.tabs.create({
+            url: "fsCaptured.html"
+        });
     }
 }
 
@@ -191,17 +268,8 @@ function getJSPlugin() {
     return fsPlugin;
 }
 
-function getKey(title) {
-    var key = (title || '').match(/\w{2}\d{4}/);
-    return key;
-};
 
-function getItemId(url) {
-    var id = (url || '').match(/\d{11,12}/);
-    return id;
-};
-
-var url = {
+var data = {
     'upload': 'http://127.0.0.1:8901',
     'detail': 'https://detail.m.tmall.com/item.htm?id=',
     'pcdesc': 'http://hws.m.taobao.com/cache/wdesc/5.0?id=',
@@ -225,8 +293,8 @@ var url = {
         'handuyishe': '263817957',
         'amh': '70986937'
     },
-    'items' : [
-    	'18959526273','520726911961','520830061103'
+    'items': [
+        '18959526273', '520726911961', '520830061103'
     ],
     'shopsearch': ['https://amh.m.tmall.com/shop/shop_auction_search.do?callback=_DLP_2384_86937_ajson_1_source_tmallsearch&spm=a222m.7628550.1998338747.1&sort=default&p=1&page_size=12&from=h5&shop_id=70986937&ajson=1&source=tmallsearch', 'https://handuyishe.m.tmall.com/shop/shop_auction_search.do?callback=_DLP_2384_01945_ajson_1_source_tmallsearch&spm=a320p.7692171.0.0&suid=263817957&sort=default&p=1&page_size=12&from=h5&shop_id=58501945&ajson=1&source=tmallsearch'],
     'seach': 'https://handuyishe.m.tmall.com/shop/shop_auction_search.do?callback=_DLP_2384_01945_ajson_1_source_tmallsearch&sort=default&p=2&page_size=12&from=h5&shop_id=58501945&ajson=1&source=tmallsearch'
