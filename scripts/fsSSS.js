@@ -47,7 +47,7 @@ var fsPlugin = {
                 me = this;
             util.each(this.doc.getElementsByClassName('itbox'), function(i, div) {
                 var img = div.getElementsByTagName(me.getTagName('img'));
-                array.push($(img[0]).attr('src').replace(/\.(jpg|png)_.+/i,'.$1'));
+                array.push($(img[0]).attr('src').replace(/\.(jpg|png|gif)_.+/i,'.$1'));
             });
             return array;
         }
