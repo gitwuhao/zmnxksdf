@@ -1,0 +1,1 @@
+document.body.removeChild(document.getElementById('FireShotNotification'));
