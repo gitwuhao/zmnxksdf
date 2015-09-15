@@ -6,7 +6,8 @@
     fs.page = {
         PC_TYPE: 'pc',
         H5_TYPE: 'h5',
-        init: function(type) {
+        init: function() {
+            this.type = this.PC_TYPE;
             fsMain.getShopData(this.loadData.bind(this));
         },
         loadData: function(shops) {
@@ -28,16 +29,16 @@
                 });
             });
             this.itemsMap = map;
-            this.createTab(this.H5_TYPE);
+            this.createTab();
         },
-        createTab: function(type) {
-            var me = this,
+        createTab: function() {
+            var type = this.type,
+                me = this,
                 url = 'fsPCCanvas.html';
             if (type == this.H5_TYPE) {
                 url = 'fsH5Canvas.html';
             }
 
-            this.type = type;
             chrome.tabs.create({
                 url: url
             }, function(tab) {
@@ -125,20 +126,35 @@
             return html;
         },
         captureDone: function(captures) {
+            var me = this;
             var item = this.activeItem;
-            $.ajax({
-                type: 'POST',
-                async: false,
-                url: fs.urls.upload,
-                data: {
-                    id: item.key,
-                    shop: item.shopId,
-                    filename: item.id + '_1.png',
-                    dir: '',
-                    data: captures[0].data
+            new fs.AjaxTask({
+                array: captures,
+                timeout: 300,
+                getAjaxcfg: function(capture) {
+                    return {
+                        type: 'POST',
+                        url: fs.urls.upload,
+                        data: {
+                            id: item.key,
+                            shop: item.shopId,
+                            filename: item.id + '_1.png',
+                            dir: '',
+                            data: capture.data
+                        }
+                    };
                 },
-                success: function() {},
-                error: function() {}
+                handle: function(capture, data) {
+
+                },
+                finish: function() {
+                    chrome.tabs.executeScript(me.activeTab.id, {
+                        code: "window.location.reload();",
+                        runAt: "document_start"
+                    }, function() {
+                    });
+                    // me.createTab(me.type);
+                }
             });
         }
     };
