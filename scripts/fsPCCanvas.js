@@ -7,6 +7,7 @@
         type: 'pc',
         loadHTML: function(html) {
             document.all.J_content.innerHTML = html;
+            $('.rmsp').remove();
         },
         mode: cModePC
     });
