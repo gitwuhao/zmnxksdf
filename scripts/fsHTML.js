@@ -21,7 +21,7 @@
         decodeReg: new RegExp('(<|<\\\/)' + tagPrefix + '(' + tagArray + ')' + tagPrefix, 'gi'),
         encodeHTML: function(html) {
             return html.replace(this.encodeReg, '$1' + getTagName('$2'))
-                .replace(/\s+src/g, ' data-src');
+                .replace(/\s+(src\s?=|background\s?=)/ig, ' data-$1');
         },
         decodeHTML: function(html) {
             return html.replace(this.decodeReg, '$1$2');

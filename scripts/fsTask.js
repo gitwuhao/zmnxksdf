@@ -1,12 +1,12 @@
 (function(global, undefined) {
     /*
     *{
-        id: 'my_task',
-    	array:[],
-    	timeout:300,
-    	handle:function(callback){
-    	
-    	}
+        array:[],
+        timeout:300,
+        autoRun : true,
+        handle:function(callback){
+        
+        }
     }
     */
     var fs = global.fs || {};
@@ -14,14 +14,20 @@
     global.fs = fs;
 
     fs.Task = function(config) {
+        if (util.isInitPrototype(config)) {
+            return;
+        }
         this.init.apply(this, arguments);
     };
 
     util.merger(fs.Task.prototype, {
-        id: 'my_task',
         index: 0,
+        autoRun: true,
         init: function(config) {
             util.merger(this, config);
+            if (this.autoRun) {
+                this.next();
+            }
         },
         next: function() {
             var task = this.get();
@@ -30,12 +36,16 @@
             }
         },
         get: function() {
-            return this.array[this.index++];
+            var task = this.array[this.index++];
+            if (!task) {
+                this.finish();
+            }
+            return task;
         },
         execute: function(task) {
             var me = this;
             this.currentTask = task;
-            this.handle(function() {
+            this.handle(task, function() {
                 me.complete(task);
             });
         },
@@ -48,10 +58,14 @@
     });
 
     fs.localStorageTask = function(config) {
+        if (util.isInitPrototype(config)) {
+            return;
+        }
         this.init.apply(this, arguments);
     };
 
     util.extend(fs.localStorageTask, fs.Task, {
+        id: 'my_task',
         LS: localStorage,
         get: function() {
             var task;

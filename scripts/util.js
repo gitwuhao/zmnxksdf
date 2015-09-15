@@ -142,6 +142,7 @@
         return value ? value.nodeName === "#text" : false;
     };
 
+    var IS_INIT_PROTOTYPE = 'IS_INIT_PROTOTYPE';
     apply(util, {
         each: each,
         it: iterator,
@@ -161,8 +162,13 @@
         },
         extend: function(clazz, superClazz, prototype) {
             clazz.prototype = superClazz.prototype;
-            clazz.prototype = new clazz();
+            clazz.prototype = new clazz(IS_INIT_PROTOTYPE);
             merger(clazz.prototype, prototype);
+        },
+        isInitPrototype: function(arg) {
+            if (IS_INIT_PROTOTYPE == arg) {
+                return true;
+            }
         }
     });
 
