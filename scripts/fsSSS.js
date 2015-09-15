@@ -5,11 +5,9 @@ var fsPlugin = {
     captures: undefined,
     init: function() {
         this.inited = true;
-        /*
         chrome.tabs.create({
             url: "fsCaptured.html"
         });
-        */
     },
     launchFunction: function(cmd, obj) {
         if (cmd == "captureInit") this.captureInit(obj);
