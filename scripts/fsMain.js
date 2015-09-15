@@ -1,14 +1,4 @@
-var nodeURL = 'http://127.0.0.1:8901',
-    urls = {
-        'node': nodeURL,
-        'upload': nodeURL + '/upload/',
-        'data': nodeURL + '/data/',
-        'detail': 'https://detail.m.tmall.com/item.htm?id=',
-        'pcdesc': 'http://hws.m.taobao.com/cache/wdesc/5.0?id=',
-        'h5desc': 'http://hws.m.taobao.com/cache/mdesc/5.0?id='
-    };
 var fsMain = {
-    urls: urls,
     'shops': [{
         'id': '58501945',
         'suid': '263817957',
@@ -38,7 +28,7 @@ var fsMain = {
                 return {
                     type: 'POST',
                     async: false,
-                    url: urls.data + 'shop_' + shop.id + '.json',
+                    url: fs.urls.data + 'shop_' + shop.id + '.json',
                     dataType: 'text'
                 };
             },
@@ -58,7 +48,7 @@ var fsMain = {
             $.ajax({
                 type: 'POST',
                 async: false,
-                url: urls.data + 'shop_' + shop.id + '.json',
+                url: fs.urls.data + 'shop_' + shop.id + '.json',
                 dataType: 'text',
                 success: function(data) {
                     localStorage[shop.id] = data;
@@ -105,7 +95,7 @@ var fsMain = {
         var me = this;
         $.ajax({
             cache: false,
-            url: urls.detail + item.id,
+            url: fs.urls.detail + item.id,
             dataType: 'text',
             success: function(html) {
                 me.doDetailHTML(item, html);
@@ -174,7 +164,7 @@ var fsMain = {
             $.ajax({
                 type: 'POST',
                 async: false,
-                url: urls.upload,
+                url: fs.urls.upload,
                 data: data,
                 success: function() {},
                 error: function() {}

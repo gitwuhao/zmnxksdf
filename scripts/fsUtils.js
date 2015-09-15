@@ -66,6 +66,25 @@ var extensionId = chrome.i18n.getMessage('@@extension_id');
 //isDebug = extensionId == "ljhbgpplnapkahgkchjfeednacjockbi";
 logToConsole("Extension ID: " + extensionId);
 
+(function(global, undefined) {
+    var nodeURL = 'http://127.0.0.1:8901',
+        urls = {
+            'node': nodeURL,
+            'upload': nodeURL + '/upload/',
+            'data': nodeURL + '/data/',
+            'detail': 'https://detail.m.tmall.com/item.htm?id=',
+            'pcdesc': 'http://hws.m.taobao.com/cache/wdesc/5.0?id=',
+            'h5desc': 'http://hws.m.taobao.com/cache/mdesc/5.0?id='
+        };
+
+    global.fs = global.fs || {};
+
+    global.fs.nodeURL = nodeURL;
+    global.fs.urls = urls;
+
+})(this);
+
+
 
 function isNativeSupported() {
     return fsNativePlugin.ready;
@@ -226,8 +245,8 @@ function getFilenameLite() {
             title = getExtension().tabTitle;
 
         /*if (i == 1)
-        	title = title.substr(0, maxLen - (fullLength - title.length));		
-		
+            title = title.substr(0, maxLen - (fullLength - title.length));      
+        
         if (i == 2)*/
         //url = url.replace(/(.*)\?.*/gi, "$1");
 
@@ -274,19 +293,19 @@ function getFilenameLite() {
 /*
 function tabSupportedForCapturing(tabId)
 {
-	try
-	{
-		chrome.tabs.executeScript(tabId, {code:"{}"}, function (res)
-		{
-			return chrome.runtime.lastError === undefined;
-		});
-		//logToconsole(chrome.runtime.lastError);
-		return true;
-	}
-	catch (e)
-	{
-		return false;
-	}
+    try
+    {
+        chrome.tabs.executeScript(tabId, {code:"{}"}, function (res)
+        {
+            return chrome.runtime.lastError === undefined;
+        });
+        //logToconsole(chrome.runtime.lastError);
+        return true;
+    }
+    catch (e)
+    {
+        return false;
+    }
 }*/
 
 function showBadge(url) {
@@ -377,4 +396,3 @@ function waitForLoading(window, tabId, timeout, callback)
 }
 
 */
-

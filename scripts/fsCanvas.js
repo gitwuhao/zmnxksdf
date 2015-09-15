@@ -55,6 +55,11 @@
         },
         taskFinish: function() {
             console.info('task finish..');
+            this.runCapture();
+        },
+        mode: cModePC,
+        runCapture: function() {
+            getExtension().executeGrabber(cActionEdit, this.mode);
         }
     };
 

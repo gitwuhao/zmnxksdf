@@ -5,7 +5,7 @@ var clickedElem;
 function enableToolsItems() {
     var fTabsMode = (capMode === cModeTabs),
         fProMode = getExtension().isProMode(),
-        showIfTabs = fTabsMode? "block" : "none",
+        showIfTabs = fTabsMode ? "block" : "none",
         showIfNotTabs = !fTabsMode ? "block" : "none",
         enabledIfPro = fProMode ? "" : "disabled",
         disabledIfNotPro = !fProMode && fTabsMode ? "disabled" : "";
@@ -29,174 +29,255 @@ function enableToolsItems() {
 
 }
 
-function switchPane(evt, id)
-{
-	var menu2 = document.getElementById(id);
-	menu2.style.display = "block";
-	menu2.style.right = "5px"; 
-	menu2.style.top = Math.min(document.body.clientHeight - menu2.clientHeight - 5, evt.pageY) + "px"; 
+function switchPane(evt, id) {
+    var menu2 = document.getElementById(id);
+    menu2.style.display = "block";
+    menu2.style.right = "5px";
+    menu2.style.top = Math.min(document.body.clientHeight - menu2.clientHeight - 5, evt.pageY) + "px";
 }
 
-function updateLastAction()
-{
-	var txt = getExtension().getLADescription();
-	
-	document.getElementById("spnLastAction").innerHTML = txt;
-	document.getElementById("spnLastAction").title = txt + " (" + getOption(cShortcutPref, cDefaultShortcut) + ")";
-	document.getElementById("spnShortcut").innerHTML = getOption(cShortcutPref, cDefaultShortcut);
-	document.getElementById("spnShortcutVisible").innerHTML = getOption(cShortcutPrefVisible, cDefaultShortcutVisible);
-	document.getElementById("spnShortcutEntire").innerHTML = getOption(cShortcutPrefEntire, cDefaultShortcutEntire);
-	document.getElementById("spnShortcutSelection").innerHTML = getOption(cShortcutPrefSelection, cDefaultShortcutSelection);
+function updateLastAction() {
+    var txt = getExtension().getLADescription();
+
+    document.getElementById("spnLastAction").innerHTML = txt;
+    document.getElementById("spnLastAction").title = txt + " (" + getOption(cShortcutPref, cDefaultShortcut) + ")";
+    document.getElementById("spnShortcut").innerHTML = getOption(cShortcutPref, cDefaultShortcut);
+    document.getElementById("spnShortcutVisible").innerHTML = getOption(cShortcutPrefVisible, cDefaultShortcutVisible);
+    document.getElementById("spnShortcutEntire").innerHTML = getOption(cShortcutPrefEntire, cDefaultShortcutEntire);
+    document.getElementById("spnShortcutSelection").innerHTML = getOption(cShortcutPrefSelection, cDefaultShortcutSelection);
 }
 
 function click(obj, evt) {
 
-	debugger;
+    debugger;
 
-    window.close();
 
     var ext = getExtension();
     if (obj.id == 'mnuPCCaptureAutoLite') {
         ext.executeGrabber(cActionEdit, cModePC);
     } else if (obj.id == "mnuMobileCaptureAutoLite") {
         ext.executeGrabber(cActionEdit, cModeMobile);
-    }else if(obj.id == "mnuCaptureEntireLite") {
-		ext.executeGrabber(cActionEdit ,cModeEntire);
-    }else if(obj.id == "mnuCaptureVisibleLite") {
-		ext.executeGrabber(cActionEdit ,cModeVisible);
-    }else if(obj.id == "mnuCaptureSelectionLite") {
-		ext.executeGrabber(cActionEdit ,cModeSelected);
+    } else if (obj.id == "mnuCaptureEntireLite") {
+        ext.executeGrabber(cActionEdit, cModeEntire);
+    } else if (obj.id == "mnuCaptureVisibleLite") {
+        ext.executeGrabber(cActionEdit, cModeVisible);
+    } else if (obj.id == "mnuCaptureSelectionLite") {
+        ext.executeGrabber(cActionEdit, cModeSelected);
+    }
+
+    window.close();
+}
+
+function click2(obj, evt) {
+    if (obj.className == "disabled") return;
+
+    clickedElem = obj;
+
+    if (obj.id != "mnuCaptureEntire" && obj.id != "mnuCaptureVisible" && obj.id != "mnuCaptureSelection" && obj.id != "mnuCaptureBrowser" && obj.id != "mnuCaptureTabs" && obj.id != "mnuMiscellaneousFolder")
+        window.close();
+
+    var ext = getExtension();
+
+    switch (obj.id) {
+        case "mnuResume":
+            ext.resumeEditing();
+            break;
+        case "mnuPreferences":
+        case "mnuPreferencesLite":
+            ext.openExtensionPreferences();
+            break;
+        case "mnuQuickLaunch":
+            ext.captureLastUsedMode();
+            break;
+            //case "mnuQuickLaunch"	: ext.openCaptureSettings(); break;
+
+        case "mnuCaptureEntire":
+            capMode = cModeEntire;
+            enableToolsItems();
+            switchPane(evt, "mnuTools");
+            break;
+        case "mnuCaptureVisible":
+            capMode = cModeVisible;
+            enableToolsItems();
+            switchPane(evt, "mnuTools");
+            break;
+        case "mnuCaptureSelection":
+            capMode = cModeSelected;
+            enableToolsItems();
+            switchPane(evt, "mnuTools");
+            break;
+        case "mnuCaptureBrowser":
+            capMode = cModeBrowser;
+            enableToolsItems();
+            switchPane(evt, "mnuTools");
+            break;
+        case "mnuCaptureTabs":
+            capMode = cModeTabs;
+            enableToolsItems();
+            switchPane(evt, "mnuTools");
+            break;
+
+        case "mnuMiscellaneousFolder":
+            switchPane(evt, "mnuMiscellaneous");
+            break;
+
+        case "mnuViewDemo":
+            ext.openDemoPage();
+            break;
+        case "mnuSupport":
+            ext.openSupportPage();
+            break;
+        case "mnuAPI":
+            ext.openAPIPage();
+            break;
+
+        case "mnuTabsUpgrade":
+        case "mnuUpgrade":
+            ext.doUpgrade();
+            break;
+
+        case "mnuUniblue":
+            ext.openUnibluePromo();
+            break;
+        case "mnuRegister":
+            ext.doRegister();
+            break;
+        case "mnuEnterLicense":
+            ext.enterLicense();
+            break;
+
+        case "mnuCaptureEntireLite":
+            ext.executeGrabber(cActionEdit, cModeEntire);
+            break;
+        case "mnuCaptureVisibleLite":
+            ext.executeGrabber(cActionEdit, cModeVisible);
+            break;
+        case "mnuCaptureSelectionLite":
+            ext.executeGrabber(cActionEdit, cModeSelected);
+            break;
+        case "mnuCaptureAutoLite":
+            ext.executeGrabber(cActionEdit, cModeAuto);
+            break;
+
+        case "mnuEdit":
+            ext.executeGrabber(cActionEdit, capMode);
+            break;
+        case "mnuSave":
+            ext.executeGrabber(cActionSave, capMode);
+            break;
+        case "mnuSavePDF":
+            ext.executeGrabber(cActionSavePDF, capMode);
+            break;
+        case "mnuSaveSinglePDF":
+            ext.executeGrabber(cActionMultiPDF, capMode);
+            break;
+        case "mnuUpload":
+            ext.executeGrabber(cActionUpload, capMode);
+            break;
+        case "mnuPrint":
+            ext.executeGrabber(cActionPrint, capMode);
+            break;
+        case "mnuClipboard":
+            ext.executeGrabber(cActionClipboard, capMode);
+            break;
+        case "mnuEmail":
+            ext.executeGrabber(cActionEMail, capMode);
+            break;
+        case "mnuExtEdit":
+            ext.executeGrabber(cActionPaint, capMode);
+            break;
+        case "mnuSendOneNote":
+            ext.executeGrabber(cActionSendOneNote, capMode);
+            break;
+        case "mnuOpenFile":
+            ext.openFile();
+            break;
+        case "mnuOpenClipboard":
+            ext.openClipboard();
+            break;
+        case "mnuLicenseInfo":
+            ext.showLicenseInfo();
+            break;
+        case "mnuAbout":
+            ext.showAbout();
+            break;
+        case "mnuFireShotNative":
+            ext.installNative();
+            break;
     }
 }
-function click2(obj, evt)
-{
-	if (obj.className == "disabled") return;
-	
-	clickedElem = obj;
-	
-	if ( obj.id != "mnuCaptureEntire" && obj.id != "mnuCaptureVisible" && obj.id != "mnuCaptureSelection" && obj.id != "mnuCaptureBrowser" && obj.id != "mnuCaptureTabs" && obj.id != "mnuMiscellaneousFolder")
-		window.close();
-		
-	var ext = getExtension();
-		
-	switch (obj.id)
-	{	case "mnuResume"			: ext.resumeEditing(); break;
-		case "mnuPreferences"		: 
-		case "mnuPreferencesLite"	:
-									  ext.openExtensionPreferences(); break;
-		case "mnuQuickLaunch"		: ext.captureLastUsedMode(); break;
-		//case "mnuQuickLaunch"	: ext.openCaptureSettings(); break;
-		
-		case "mnuCaptureEntire"		: capMode = cModeEntire; enableToolsItems(); switchPane(evt, "mnuTools"); break;
-		case "mnuCaptureVisible"	: capMode = cModeVisible; enableToolsItems(); switchPane(evt, "mnuTools"); break;
-		case "mnuCaptureSelection"	: capMode = cModeSelected; enableToolsItems(); switchPane(evt, "mnuTools"); break;
-		case "mnuCaptureBrowser"	: capMode = cModeBrowser; enableToolsItems(); switchPane(evt, "mnuTools"); break;
-        case "mnuCaptureTabs"	    : capMode = cModeTabs; enableToolsItems(); switchPane(evt, "mnuTools"); break;
-	
-		case "mnuMiscellaneousFolder"	:  switchPane(evt, "mnuMiscellaneous"); break;
-		
-		case "mnuViewDemo"			: ext.openDemoPage(); break;
-		case "mnuSupport"			: ext.openSupportPage(); break;
-		case "mnuAPI"				: ext.openAPIPage(); break;
 
-        case "mnuTabsUpgrade"       :
-        case "mnuUpgrade"			: ext.doUpgrade(); break;
+function mouseOver(obj, evt) {
+    if (obj != clickedElem && (!obj.parentNode || obj.parentNode.getAttribute('rel') != "mnuTools"))
+        document.getElementById("mnuTools").style.display = "none";
 
-		case "mnuUniblue"			: ext.openUnibluePromo(); break;
-		case "mnuRegister"			: ext.doRegister(); break;
-		case "mnuEnterLicense"		: ext.enterLicense(); break;
-		
-		case "mnuCaptureEntireLite"		: ext.executeGrabber(cActionEdit ,cModeEntire); break;
-		case "mnuCaptureVisibleLite"	: ext.executeGrabber(cActionEdit ,cModeVisible); break;
-		case "mnuCaptureSelectionLite"	: ext.executeGrabber(cActionEdit ,cModeSelected); break;
-		case "mnuCaptureAutoLite" 		: ext.executeGrabber(cActionEdit ,cModeAuto); break;
-			
-		case "mnuEdit"				: ext.executeGrabber(cActionEdit ,capMode); break;
-		case "mnuSave"				: ext.executeGrabber(cActionSave ,capMode); break;
-		case "mnuSavePDF"			: ext.executeGrabber(cActionSavePDF ,capMode); break;
-        case "mnuSaveSinglePDF"		: ext.executeGrabber(cActionMultiPDF ,capMode); break;
-		case "mnuUpload"			: ext.executeGrabber(cActionUpload ,capMode); break;
-		case "mnuPrint"				: ext.executeGrabber(cActionPrint ,capMode); break;
-		case "mnuClipboard"			: ext.executeGrabber(cActionClipboard ,capMode); break;
-		case "mnuEmail"				: ext.executeGrabber(cActionEMail ,capMode); break;
-		case "mnuExtEdit"			: ext.executeGrabber(cActionPaint ,capMode); break;
-		case "mnuSendOneNote"		: ext.executeGrabber(cActionSendOneNote, capMode); break;
-		case "mnuOpenFile"			: ext.openFile(); break;
-		case "mnuOpenClipboard"		: ext.openClipboard(); break;
-		case "mnuLicenseInfo"		: ext.showLicenseInfo(); break;
-		case "mnuAbout"				: ext.showAbout(); break;
-		case "mnuFireShotNative"	: ext.installNative(); break;
-	}	
-}
-
-function mouseOver(obj, evt)
-{
-	if (obj != clickedElem && (!obj.parentNode || obj.parentNode.getAttribute('rel') != "mnuTools"))
-		document.getElementById("mnuTools").style.display = "none";
-		
     if (obj != clickedElem && (!obj.parentNode || obj.parentNode.getAttribute('rel') != "mnuMiscellaneous"))
         document.getElementById("mnuMiscellaneous").style.display = "none";
-		
+
 }
 
-function load()
-{
-	try
-	{
-		i18nPrepare();
-	} 
-	catch (e) {logError(e.message);}
-	
-	var itr = document.createNodeIterator(document.documentElement, NodeFilter.SHOW_ELEMENT, null, false);
-	var currentNode;  
-   
-	while (currentNode = itr.nextNode()) 
-	{  
-   		if (currentNode.nodeName == "LI")
-		{
-			currentNode.onclick = function(evt){evt.preventDefault(); click(this, evt); return true;};
-			currentNode.onmouseover = function(evt){mouseOver(this, evt);};
-		}
-	} 
-	
-	updateLastAction();
-	updateAccessibility();
+function load() {
+    try {
+        i18nPrepare();
+    } catch (e) {
+        logError(e.message);
+    }
+
+    var itr = document.createNodeIterator(document.documentElement, NodeFilter.SHOW_ELEMENT, null, false);
+    var currentNode;
+
+    while (currentNode = itr.nextNode()) {
+        if (currentNode.nodeName == "LI") {
+            currentNode.onclick = function(evt) {
+                evt.preventDefault();
+                click(this, evt);
+                return true;
+            };
+            currentNode.onmouseover = function(evt) {
+                mouseOver(this, evt);
+            };
+        }
+    }
+
+    updateLastAction();
+    updateAccessibility();
 }
 
-function updateAccessibility()
-{
-	getExtension().getMenuSettings(function (settings)	{
-		if(settings==null){
-			return;
-		}
-		for(var key in settings)
-		{
-			var elem = document.getElementById(key);
-			if (elem == undefined) alert("Element " + key + " not found");
-			else
-			{
-				switch (settings[key])
-				{
-					case "visible"	: elem.style.display = "block"; break;
-					case "hidden"	: elem.style.display = "none"; break;
-					case "disabled"	: elem.className = "disabled"; break;
-					case "enabled"	: elem.className = ""; break;
-				}
-				
-			}
-		}
-		
-		//document.getElementById("mnuMain").style.display = "block";
-	});
+function updateAccessibility() {
+    getExtension().getMenuSettings(function(settings) {
+        if (settings == null) {
+            return;
+        }
+        for (var key in settings) {
+            var elem = document.getElementById(key);
+            if (elem == undefined) alert("Element " + key + " not found");
+            else {
+                switch (settings[key]) {
+                    case "visible":
+                        elem.style.display = "block";
+                        break;
+                    case "hidden":
+                        elem.style.display = "none";
+                        break;
+                    case "disabled":
+                        elem.className = "disabled";
+                        break;
+                    case "enabled":
+                        elem.className = "";
+                        break;
+                }
+
+            }
+        }
+
+        //document.getElementById("mnuMain").style.display = "block";
+    });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-	if (getExtension().checkBadgeAction()) 
-	{
-		window.close();
-		return;
-	}
-	else
-		load();
+document.addEventListener('DOMContentLoaded', function() {
+    if (getExtension().checkBadgeAction()) {
+        window.close();
+        return;
+    } else
+        load();
 });
-

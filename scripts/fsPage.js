@@ -31,13 +31,17 @@
             this.createTab(this.H5_TYPE);
         },
         createTab: function(type) {
-            var url = 'fsPCCanvas.html';
+            var me = this,
+                url = 'fsPCCanvas.html';
             if (type == this.H5_TYPE) {
                 url = 'fsH5Canvas.html';
             }
+
             this.type = type;
             chrome.tabs.create({
                 url: url
+            }, function(tab) {
+                me.activeTab = tab;
             });
         },
         getDescHTML: function(handle) {
@@ -49,6 +53,7 @@
             if (!item) {
                 return;
             }
+            this.activeItem = item;
             if (this.type == this.H5_TYPE) {
                 this.getH5DescHTML(item.id, handle);
             } else {
@@ -59,7 +64,7 @@
             var me = this;
             $.ajax({
                 cache: false,
-                url: urls.pcdesc + id,
+                url: fs.urls.pcdesc + id,
                 dataType: 'text',
                 success: function(html) {
                     me.doPCDescHTML(id, html, handle);
@@ -90,7 +95,7 @@
             var me = this;
             $.ajax({
                 cache: false,
-                url: urls.h5desc + id,
+                url: fs.urls.h5desc + id,
                 dataType: 'text',
                 success: function(html) {
                     me.doH5DescHTML(id, html, handle);
@@ -118,6 +123,23 @@
                 handle(array);
             }
             return html;
+        },
+        captureDone: function(captures) {
+            var item = this.activeItem;
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: fs.urls.upload,
+                data: {
+                    id: item.key,
+                    shop: item.shopId,
+                    filename: item.id + '_1.png',
+                    dir: '',
+                    data: captures[0].data
+                },
+                success: function() {},
+                error: function() {}
+            });
         }
     };
 

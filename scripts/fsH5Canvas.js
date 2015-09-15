@@ -12,9 +12,7 @@
             })
             document.all.J_pages.innerHTML = array.join('');
         },
-        taskFinish: function() {
-            console.info('task finish..');
-        }
+        mode: cModeMobile
     });
 
     fs.canvas.init();

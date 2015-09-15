@@ -5,9 +5,6 @@ var fsPlugin = {
     captures: undefined,
     init: function() {
         this.inited = true;
-        chrome.tabs.create({
-            url: "fsCaptured.html"
-        });
     },
     launchFunction: function(cmd, obj) {
         if (cmd == "captureInit") this.captureInit(obj);
@@ -58,8 +55,7 @@ var fsPlugin = {
 
     },
     captureDone: function(data) {
-
-
+        fs.page.captureDone(fsPlugin.captures);
     },
     captureDone2: function(data) {
 

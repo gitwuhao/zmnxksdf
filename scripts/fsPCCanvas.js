@@ -8,9 +8,7 @@
         loadHTML: function(html) {
             document.all.J_content.innerHTML = html;
         },
-        taskFinish: function() {
-            console.info('task finish..');
-        }
+        mode: cModePC
     });
 
     fs.canvas.init();
