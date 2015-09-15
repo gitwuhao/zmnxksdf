@@ -1,10 +1,14 @@
-var fsPlugin = {
-    urls: {
-        'upload': 'http://127.0.0.1:8901',
+var nodeURL = 'http://127.0.0.1:8901',
+    urls = {
+        'node': nodeURL,
+        'upload': nodeURL + '/upload/',
+        'data': nodeURL + '/data/',
         'detail': 'https://detail.m.tmall.com/item.htm?id=',
         'pcdesc': 'http://hws.m.taobao.com/cache/wdesc/5.0?id=',
         'h5desc': 'http://hws.m.taobao.com/cache/mdesc/5.0?id='
-    },
+    };
+var fsPlugin = {
+    urls: urls,
     'shops': [{
         'id': '58501945',
         'suid': '263817957',
@@ -73,10 +77,11 @@ var fsPlugin = {
     captures: undefined,
     init: function() {
         this.inited = true;
-
+        /*
         chrome.tabs.create({
             url: "fsCaptured.html"
         });
+        */
     },
     launchFunction: function(cmd, obj) {
         if (cmd == "captureInit") this.captureInit(obj);
@@ -134,27 +139,40 @@ var fsPlugin = {
         var array = (url || '').match(/\d{11,12}/);
         return (array || [])[0];
     },
-    initDetail: function() {
-        var me = this;
-        var shop = localStorage['58501945'];
-        shop = JSON.parse(shop);
-
-
-        var array = [];
-        util.it(shop.items, function(key, value) {
-            array.push({
-                itemId: key,
-                shopId: shop.id
+    initShopData: function() {
+        var array = this.shops;
+        util.each(this.shops, function(i, shop) {
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: urls.data + 'shop_' + shop.id + '.json',
+                dataType: 'text',
+                success: function(data) {
+                    localStorage[shop.id] = data;
+                },
+                error: function() {}
             });
         });
 
+        this.initDetail();
 
-        shop = localStorage['58501945'];
-        shop = JSON.parse(shop);
-        util.it(shop.items, function(key, value) {
-            array.push({
-                itemId: key,
-                shopId: shop.id
+    },
+    initDetail: function() {
+        var me = this;
+        var array = [];
+        util.each(this.shops, function(i, shop) {
+            var data = localStorage[shop.id];
+            shop = JSON.parse(data);
+            if (!shop) {
+                return;
+            }
+            util.it(shop.items, function(key, value) {
+                array.push({
+                    id: key,
+                    key: value,
+                    shopId: shop.id
+                });
+                return false;
             });
         });
 
@@ -167,20 +185,20 @@ var fsPlugin = {
         if (!item) {
             return;
         }
-        this.getDetailJSON(item.itemId, item.shopId, function() {
+        this.getDetailJSON(item, function() {
             setTimeout(function() {
                 me.loadDetail(array);
             }, 3000);
         });
     },
-    getDetailJSON: function(id, shopId, handle) {
+    getDetailJSON: function(item, handle) {
         var me = this;
         $.ajax({
             cache: false,
-            url: this.urls.detail + id,
+            url: urls.detail + item.id,
             dataType: 'text',
             success: function(html) {
-                me.doDetailHTML(id, shopId, html);
+                me.doDetailHTML(item, html);
                 handle();
             },
             error: function(msg) {
@@ -188,18 +206,21 @@ var fsPlugin = {
             }
         });
     },
-    doDetailHTML: function(id, shopId, html) {
+    doDetailHTML: function(item, html) {
         this.util.init(html);
         var array = this.util.getMainImageArray();
         var data = this.util.getData() || {};
         var detail = data.detail;
         var mdskip = data.mdskip;
+        var key = item.key;
+        var shopId = item.shopId;
+        var id = item.id;
 
         $.ajax({
             type: 'POST',
-            url: 'http://127.0.0.1:8901',
+            url: urls.upload,
             data: {
-                id: id,
+                id: key,
                 shop: shopId,
                 filename: id + '_detail.json',
                 dir: '',
@@ -212,9 +233,9 @@ var fsPlugin = {
         $.ajax({
             type: 'POST',
             async: false,
-            url: 'http://127.0.0.1:8901',
+            url: urls.upload,
             data: {
-                id: id,
+                id: key,
                 shop: shopId,
                 filename: id + '_mdskip.json',
                 dir: '',
@@ -227,9 +248,9 @@ var fsPlugin = {
         $.ajax({
             type: 'POST',
             async: false,
-            url: 'http://127.0.0.1:8901',
+            url: urls.upload,
             data: {
-                id: id,
+                id: key,
                 shop: shopId,
                 filename: id + '_images.json',
                 dir: '',
@@ -386,8 +407,8 @@ var fsPlugin = {
         }
 
         /*var ctx = this.pBitmapForChrome.getContext('2d');
-		
-		ctx.fillStyle = "rgb(200,0,0)";
+        
+        ctx.fillStyle = "rgb(200,0,0)";
         ctx.fillRect (10, 10, 55, 50);
 
         ctx.fillStyle = "rgba(0, 0, 200, 0.5)";
