@@ -73,6 +73,7 @@ img {
     background-color: #f5f5f5;
     padding: 0;
     width: 790px;
+    overflow-y: hidden;
 }
 
 .rmsp {

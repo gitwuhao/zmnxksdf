@@ -11,6 +11,13 @@
             fsMain.getShopData(this.loadData.bind(this));
             setInterval(this.pushLocalStorage.bind(this), 3 * 60 * 1000);
         },
+        loadLS:function(){
+            this.type = this.PC_TYPE;
+            var data=localStorage['items_map'];
+            this.itemsMap = JSON.parse(data);
+            this.createTab();
+            setInterval(this.pushLocalStorage.bind(this), 3 * 60 * 1000);
+        },
         loadData: function(shops) {
             var me = this,
                 map = {};
