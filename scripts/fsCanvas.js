@@ -17,7 +17,7 @@
         },
         startup: function(page) {
             this.page = page;
-            page.fs.page.getDescHTML(this.doDescHTML.bind(this));
+            page.fs.page.getDescHTML(window, this.doDescHTML.bind(this));
         },
         doDescHTML: function(html) {
             this.loadHTML(html);
@@ -29,7 +29,6 @@
         initImageQueue: function() {
             new fs.Task({
                 array: $('[data-src],[data-background]'),
-                timeout: 300,
                 handle: this.taskExecute.bind(this),
                 finish: this.taskFinish.bind(this)
             });

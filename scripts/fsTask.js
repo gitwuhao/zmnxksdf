@@ -22,6 +22,7 @@
 
     util.merger(fs.Task.prototype, {
         index: 0,
+        timeout: 0,
         autoRun: true,
         init: function(config) {
             util.merger(this, config);

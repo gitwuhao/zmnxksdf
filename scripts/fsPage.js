@@ -45,7 +45,7 @@
                 me.activeTab = tab;
             });
         },
-        getDescHTML: function(handle) {
+        getDescHTML: function(win, handle) {
             var item;
             util.it(this.itemsMap, function(key, value) {
                 item = value;
@@ -54,6 +54,7 @@
             if (!item) {
                 return;
             }
+            this.activeWin = win;
             this.activeItem = item;
             if (this.type == this.H5_TYPE) {
                 this.getH5DescHTML(item.id, handle);
@@ -130,7 +131,7 @@
             var item = this.activeItem;
             new fs.AjaxTask({
                 array: captures,
-                timeout: 300,
+                _index_: 0,
                 getAjaxcfg: function(capture) {
                     return {
                         type: 'POST',
@@ -138,7 +139,7 @@
                         data: {
                             id: item.key,
                             shop: item.shopId,
-                            filename: item.id + '_1.png',
+                            filename: item.id + '_' + (++this._index_) + '.png',
                             dir: '',
                             data: capture.data
                         }
@@ -148,12 +149,7 @@
 
                 },
                 finish: function() {
-                    chrome.tabs.executeScript(me.activeTab.id, {
-                        code: "window.location.reload();",
-                        runAt: "document_start"
-                    }, function() {
-                    });
-                    // me.createTab(me.type);
+                    me.activeWin.location.reload();
                 }
             });
         }
