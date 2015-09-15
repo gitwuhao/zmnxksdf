@@ -6,7 +6,7 @@
     util.merger(fs.canvas, {
         type: 'pc',
         loadHTML: function(html) {
-            document.all.J_pages.innerHTML = html;
+            document.all.J_content.innerHTML = html;
         },
         taskFinish: function() {
             console.info('task finish..');

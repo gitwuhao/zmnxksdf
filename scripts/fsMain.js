@@ -13,16 +13,12 @@ var fsMain = {
         'id': '58501945',
         'suid': '263817957',
         'name': 'handuyishe',
-        items: {
-
-        }
+        items: {}
     }, {
         'id': '70986937',
         'suid': '849727411',
         'name': 'amh',
-        items: {
-
-        }
+        items: {}
     }],
     getKey: function(title) {
         var array = (title || '').match(/\w{2}\d{4}/);
@@ -33,26 +29,25 @@ var fsMain = {
         return (array || [])[0];
     },
     getShopData: function(handle) {
-        var array = this.shops;
-        new fs.Task({
+        var me = this,
+            array = this.shops;
+        new fs.AjaxTask({
             array: array,
             timeout: 300,
-            handle: function(shop, callback) {
-                $.ajax({
+            getAjaxcfg: function(shop) {
+                return {
                     type: 'POST',
                     async: false,
                     url: urls.data + 'shop_' + shop.id + '.json',
-                    dataType: 'text',
-                    success: function(data) {
-                        shop.items = JSON.parse(data).items;
-                        callback();
-                    },
-                    error: function() {}
-                });
+                    dataType: 'text'
+                };
+            },
+            handle: function(shop, data) {
+                shop.items = JSON.parse(data).items;
             },
             finish: function() {
                 if (handle) {
-                    handle();
+                    handle(me.shops);
                 }
             }
         });
@@ -91,7 +86,6 @@ var fsMain = {
                 return false;
             });
         });
-
         array.index = 0;
         this.loadDetail(array);
     },
@@ -107,7 +101,7 @@ var fsMain = {
             }, 3000);
         });
     },
-    getDetailJSON: function(item, handle) {
+    getDetailHTML: function(item, handle) {
         var me = this;
         $.ajax({
             cache: false,
@@ -232,67 +226,10 @@ var fsMain = {
                 localStorage[shop.id] = JSON.stringify(shop);
             }
         }
-    },
-    getPCDescHTML: function(id) {
-        var me = this;
-        $.ajax({
-            cache: false,
-            url: urls.pcdesc + id,
-            dataType: 'text',
-            success: function(html) {
-                me.doPCDescHTML(id, html);
-            },
-            error: function(msg) {
-
-            }
-        });
-    },
-    getPCDesc: function(fsHTML) {
-        var array = fsHTML.getTagContext('script');
-        if (array.length < 1) {
-            return null;
-        }
-        return fsHTML.getDataByKey('wdescData', array);
-    },
-    doPCDescHTML: function(id, html) {
-        var fsHTML = new fs.html(html);
-        var data = this.getPCDesc(fsHTML);
-        var html = data.tfsContent;
-        html = fs.html.decodeHTML(html);
-        console.info(html);
-    },
-    getH5DescHTML: function(id) {
-        var me = this;
-        $.ajax({
-            cache: false,
-            url: urls.h5desc + id,
-            dataType: 'text',
-            success: function(html) {
-                me.doH5DescHTML(id, html);
-            },
-            error: function(msg) {
-
-            }
-        });
-    },
-    getH5Desc: function(fsHTML) {
-        var array = fsHTML.getTagContext('script');
-        if (array.length < 1) {
-            return null;
-        }
-        return fsHTML.getDataByKey('wdescData', array);
-    },
-    doH5DescHTML: function(id, html) {
-        var fsHTML = new fs.html(html);
-        var data = this.getH5Desc(fsHTML);
-        var html = data.wdescContent.pages.join('');
-        fsHTML = new fs.html(html);
-        var array = fsHTML.getTagContext('img');
-        console.info(array);
     }
 };
 
-
+// fsMain.getShopData();?
 
 
 

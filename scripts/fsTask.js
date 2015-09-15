@@ -44,10 +44,62 @@
         },
         execute: function(task) {
             var me = this;
-            this.currentTask = task;
             this.handle(task, function() {
                 me.complete(task);
             });
+        },
+        complete: function(task) {
+            setTimeout(this.next.bind(this), this.timeout);
+        },
+        finish: function() {
+
+        }
+    });
+
+
+
+    fs.AjaxTask = function(config) {
+        if (util.isInitPrototype(config)) {
+            return;
+        }
+        this.init.apply(this, arguments);
+    };
+
+    util.extend(fs.AjaxTask, fs.Task, {
+        index: 0,
+        autoRun: true,
+        init: function(config) {
+            util.merger(this, config);
+            if (this.autoRun) {
+                this.next();
+            }
+        },
+        next: function() {
+            var task = this.get();
+            if (task) {
+                this.execute(task);
+            }
+        },
+        get: function() {
+            var task = this.array[this.index++];
+            if (!task) {
+                this.finish();
+            }
+            return task;
+        },
+        getAjaxcfg: function(task) {
+            return task;
+        },
+        execute: function(task) {
+            var me = this,
+                config = this.getAjaxcfg(task);
+            $.ajax(util.merger({
+                success: function(data) {
+                    me.handle(task, data);
+                    me.complete(task);
+                },
+                error: function() {}
+            }, config));
         },
         complete: function(task) {
             setTimeout(this.next.bind(this), this.timeout);

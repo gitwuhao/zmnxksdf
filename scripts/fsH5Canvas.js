@@ -5,8 +5,12 @@
 
     util.merger(fs.canvas, {
         type: 'h5',
-        loadHTML: function(html) {
-            document.all.J_content.innerHTML = html;
+        loadHTML: function(array) {
+            var me = this;
+            util.each(array, function(i, url) {
+                array[i] = '<img data-src="' + me.getURL(url) + '"/>';
+            })
+            document.all.J_pages.innerHTML = array.join('');
         },
         taskFinish: function() {
             console.info('task finish..');

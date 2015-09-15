@@ -12,11 +12,15 @@
                 });
             });
         },
+        getURL: function(url) {
+            return url.replace(/^(\/\/)/, 'http://');
+        },
         startup: function(page) {
             this.page = page;
-            var task = page.fs.page.getTask(this.type);
-            this.task = task;
-            this.loadHTML(task.html);
+            page.fs.page.getDescHTML(this.doDescHTML.bind(this));
+        },
+        doDescHTML: function(html) {
+            this.loadHTML(html);
             this.initImageQueue();
         },
         loadHTML: function(html) {
@@ -40,7 +44,7 @@
             }
 
             key = key.replace('data-', '');
-            src = src.replace(/^(\/\/)/, 'http://');
+            src = this.getURL(src);
 
             var img = new Image();
             img.onload = function() {
