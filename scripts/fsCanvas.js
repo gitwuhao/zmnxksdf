@@ -3,19 +3,24 @@
 
     global.fs = fs;
 
-    fs.canvas = function(config) {
-        if (util.isInitPrototype(config)) {
-            return;
-        }
-        this.init.apply(this, arguments);
-    };
-
-    util.merger(fs.canvas.prototype, {
+    fs.canvas = {
         type: 'pc',
-        init: function(page) {
+        init: function() {
+            window.addEventListener('load', function() {
+                chrome.runtime.getBackgroundPage(function(page) {
+                    fs.canvas.startup(page);
+                });
+            });
+        },
+        startup: function(page) {
+            this.page = page;
             var task = page.fs.page.getTask(this.type);
-            document.body.innerHTML = task.html;
+            this.task = task;
+            this.loadHTML(task.html);
             this.initImageQueue();
+        },
+        loadHTML: function(html) {
+            document.body.innerHTML = html;
         },
         initImageQueue: function() {
             new fs.Task({
@@ -47,12 +52,6 @@
         taskFinish: function() {
             console.info('task finish..');
         }
-    });
+    };
 
-
-    window.addEventListener('load', function() {
-        chrome.runtime.getBackgroundPage(function(page) {
-            new fs.canvas(page);
-        });
-    });
 })(window);

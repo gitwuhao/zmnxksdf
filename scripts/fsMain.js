@@ -32,6 +32,31 @@ var fsMain = {
         var array = (url || '').match(/\d{11,12}/);
         return (array || [])[0];
     },
+    getShopData: function(handle) {
+        var array = this.shops;
+        new fs.Task({
+            array: array,
+            timeout: 300,
+            handle: function(shop, callback) {
+                $.ajax({
+                    type: 'POST',
+                    async: false,
+                    url: urls.data + 'shop_' + shop.id + '.json',
+                    dataType: 'text',
+                    success: function(data) {
+                        shop.items = JSON.parse(data).items;
+                        callback();
+                    },
+                    error: function() {}
+                });
+            },
+            finish: function() {
+                if (handle) {
+                    handle();
+                }
+            }
+        });
+    },
     initShopData: function() {
         var array = this.shops;
         util.each(this.shops, function(i, shop) {
