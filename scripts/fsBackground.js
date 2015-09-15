@@ -14,11 +14,11 @@ var capResult, capResultDataURL, capResultFileNameLite, multiPDFMode;
 
 var PCSize = {
         clientWidth: 790,
-        clientHeight: 600
+        clientHeight: 0
     },
     MobileSize = {
         clientWidth: 320,
-        clientHeight: 480
+        clientHeight: 0
     };
 
 

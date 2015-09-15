@@ -25,7 +25,7 @@
                         key: value,
                         shopId: shop.id
                     };
-                    return false;
+                    // return false;
                 });
             });
             this.itemsMap = map;
@@ -149,9 +149,13 @@
 
                 },
                 finish: function() {
-                    me.activeWin.location.reload();
+                    me.finishCapture();
                 }
             });
+        },
+        finishCapture: function() {
+            delete this.itemsMap[this.activeItem.id];
+            this.activeWin.location.reload();
         }
     };
 

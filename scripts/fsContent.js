@@ -357,23 +357,23 @@ chrome.extension.onConnect.addListener(function(port) {
                     enableSomeElements(false);
                 //	disableFixedPositions();
 
-                if (msg.clientWidth && msg.clientHeight) {
-                    clientWidth = msg.clientWidth;
-                    clientHeight = msg.clientHeight;
-
-                    //fix desc
-                    // if(document.all.description){
-                    // body.innerHTML=document.all.description.innerHTML;
-                    // }
-                    // body.style.width=clientWidth + "px";
-                    body.scrollTop = 0;
-                } else if (divElement) {
+                if (divElement) {
                     clientWidth = divElement.clientWidth;
                     clientHeight = divElement.clientHeight;
                 } else {
                     clientWidth = doc.compatMode == "CSS1Compat" ? doc.documentElement.clientWidth : body.clientWidth;
                     clientHeight = doc.compatMode == "CSS1Compat" ? doc.documentElement.clientHeight : body.clientHeight;
                 }
+
+                if (msg.clientWidth) {
+                    clientWidth = msg.clientWidth;
+                }
+                if (msg.clientHeight) {
+                    clientHeight = msg.clientHeight;
+                }
+
+                body.scrollTop = 0;
+
 
                 if (window.innerHeight <= clientHeight)
                     docWidth = clientWidth;
