@@ -9,6 +9,7 @@
         init: function() {
             this.type = this.PC_TYPE;
             fsMain.getShopData(this.loadData.bind(this));
+            setInterval(this.pushLocalStorage.bind(this), 3 * 60 * 1000);
         },
         loadData: function(shops) {
             var me = this,
@@ -156,7 +157,23 @@
         finishCapture: function() {
             delete this.itemsMap[this.activeItem.id];
             this.activeWin.location.reload();
+        },
+        pushLocalStorage: function() {
+            var data = JSON.stringify(this.itemsMap);
+            localStorage['items_map'] = data;
+            $.ajax({
+                type: 'POST',
+                url: fs.urls.upload,
+                data: {
+                    filename: 'items_map.json',
+                    dir: '',
+                    data: data
+                },
+                success: function(data) {},
+                error: function() {}
+            });
         }
     };
+
 
 })(window);
