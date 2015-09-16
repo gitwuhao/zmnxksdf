@@ -6,14 +6,19 @@
     fs.page = {
         PC_TYPE: 'pc',
         H5_TYPE: 'h5',
+        error: {
+            id: "40023114821",
+            key: "LF4002",
+            shopId: "58501945"
+        },
         init: function() {
             this.type = this.PC_TYPE;
             fsMain.getShopData(this.loadData.bind(this));
             setInterval(this.pushLocalStorage.bind(this), 3 * 60 * 1000);
         },
-        loadLS:function(){
+        loadLS: function() {
             this.type = this.PC_TYPE;
-            var data=localStorage['items_map'];
+            var data = localStorage['items_map'];
             this.itemsMap = JSON.parse(data);
             this.createTab();
             setInterval(this.pushLocalStorage.bind(this), 3 * 60 * 1000);
