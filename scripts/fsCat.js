@@ -5,7 +5,7 @@ var pictureCategory = {
 };
 var urls = {
     'upload': {
-    	//https://developer.mozilla.org/en-US/docs/Web/API/FormData/append
+        //https://developer.mozilla.org/en-US/docs/Web/API/FormData/append
         url: 'http://tadget.taobao.com/redaction/redaction/json.json?cmd=json_file_upload&_input_charset=UTF-8&_output_charset=UTF-8&source=tadget',
         data: {
             'pic_file': '图片.png',
@@ -18,10 +18,57 @@ var urls = {
             'watermark': 'false',
             'd': '1',
             'dirId': '目录',
-            'upload_m' : 'NewFlash',
+            'upload_m': 'NewFlash',
             'bizCode': 'tu'
         },
-        result: {}
+        result: {
+            "success": true,
+            "message": "",
+            "module": {
+                "pictureId": "106140122544349451",
+                "pictureCategoryId": "106141122490019253",
+                "picturePath": "i4/346360614/TB2.SVrfpXXXXb1XpXXXXXXXXXX_!!346360614.jpg",
+                "name": "41hnO8lpjCL",
+                "sizes": 32483,
+                "sellerId": "346360614",
+                "deleted": 0,
+                "status": 0,
+                "gmtCreate": 1442386353536,
+                "gmtModified": 1442386353536,
+                "pixel": "500x279",
+                "md5": "",
+                "options": 0,
+                "genShortURL": null,
+                "featuresMap": {
+                    "source": "tadget,MD5,"
+                },
+                "optionMap": {
+                    "source": "tadget,MD5,"
+                },
+                "fullUrl": "https://img.alicdn.com/imgextra/i4/346360614/TB2.SVrfpXXXXb1XpXXXXXXXXXX_!!346360614.jpg",
+                "picDomainOption": null,
+                "frezonMessage": null,
+                "pictureCategoryName": null,
+                "clientType": 0,
+                "fileType": 1,
+                "spaceId": 0,
+                "mountSpaceId": null,
+                "from": "pic",
+                "pictureVersion": null,
+                "sellerNick": null
+            },
+            "crsToken": "diN1l0InMZDBva2",
+            "errorCode": null,
+            "errorMessage": null,
+            "jsonData": {
+                "fileId": "106140122544349451",
+                "gmtCreate": 1442386353535,
+                "gmtModified": 1442386353535,
+                "url": "https://img.alicdn.com/imgextra/i4/346360614/TB2.SVrfpXXXXb1XpXXXXXXXXXX_!!346360614.jpg",
+                "name": "41hnO8lpjCL",
+                "size": 32483
+            }
+        }
     },
     'addCategory': {
         url: 'http://tadget.taobao.com/redaction/redaction/json.json',

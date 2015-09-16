@@ -20,7 +20,9 @@
             page.fs.page.getDescHTML(window, this.doDescHTML.bind(this));
         },
         doDescHTML: function(html) {
-            this.loadHTML(html);
+            this.loadHTML(html.replace(/\s?\r\n\s?/g,'').replace(/\s+(<)/g,'$1'));
+            $('table td a img').closest('table').remove();
+            $('.desc_anchor').remove();
             this.initImageQueue();
         },
         loadHTML: function(html) {
