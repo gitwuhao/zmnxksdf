@@ -46,7 +46,7 @@
             src = this.getURL(src);
 
             var img = new Image();
-            img.onload = function() {
+            img.onerror = img.onload = function() {
                 $elem.attr(key, src);
                 callback(img);
             };
