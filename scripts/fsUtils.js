@@ -82,12 +82,6 @@ logToConsole("Extension ID: " + extensionId);
     global.fs.nodeURL = nodeURL;
     global.fs.urls = urls;
 
-    global.fs.KEY = {
-        hd: 'handu',
-        amh: 'amh'
-    };
-
-
 })(this);
 
 

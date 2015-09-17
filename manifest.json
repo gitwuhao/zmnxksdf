@@ -1,10 +1,15 @@
 {
     "background": {
-        "scripts": ["scripts/3p/jquery-2.1.1.min.js", "scripts/util.js", "scripts/fsHTML.js", "scripts/fsTask.js", "scripts/fsUtils.js", "scripts/bg/fsCommands.js", "scripts/bg/fsBackground.js", "scripts/bg/fsPlugin.js", "scripts/bg/fsMain.js", "scripts/bg/fsPage.js", "scripts/bg/fsNativeAPISupport.js", "scripts/3p/base64.js"]
+        "scripts": ["scripts/3p/jquery-2.1.1.min.js", "scripts/util.js", "scripts/fsHTML.js", "scripts/fsTask.js", "scripts/fsUtils.js", "scripts/fsCommands.js", "scripts/fsBackground.js", "scripts/fsSSS.js", "scripts/fsMain.js", "scripts/fsPage.js", "scripts/fsNativeAPISupport.js", "scripts/3p/base64.js"]
+    },
+    "browser_action": {
+        "default_icon": "images/sss_19.png",
+        "default_popup": "fsPopup.html",
+        "default_title": "Capture page"
     },
     "content_scripts": [{
-        "js": ["scripts/fsUtils.js", "scripts/tb/fsArrayBuffer.js", "scripts/tb/fsGallery.js"],
-        "matches": ["http://tadget.taobao.com/*", "https://tadget.taobao.com/*"],
+        "js": ["scripts/fsUtils.js", "scripts/fsSelection.js", "scripts/fsContent.js"],
+        "matches": ["http://*/*", "https://*/*"],
         "run_at": "document_start"
     }],
     // "default_locale": "en",
